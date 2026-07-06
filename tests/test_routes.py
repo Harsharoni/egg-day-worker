@@ -70,7 +70,7 @@ def test_home_all_phases(client, monkeypatch):
         r = client.get("/")
         assert r.status_code == 200, f"{phase}: {r.text[:300]}"
         assert competition.comp_phase(now) == phase
-        assert "Scoreboard" in r.text
+        assert "Guild Competition" in r.text
 
 
 def client_snapshot(client):
@@ -112,6 +112,23 @@ def test_player_single_account_no_ei(client):
 def test_player_404s(client):
     assert client.get("/player/424242").status_code == 404
     assert client.get("/player/1?ei=NotAlice").status_code == 404
+
+
+def test_leaderboard_page_has_scores(client):
+    r = client.get("/leaderboard")
+    assert r.status_code == 200
+    # every leaderboard player listed, registered or not, with Score column
+    for name in ("Alice", "Bob", "a/b slash"):
+        assert name in r.text
+    assert "Score" in r.text
+
+
+def test_home_groups_members_by_guild(client):
+    r = client.get("/")
+    assert r.status_code == 200
+    # guild sections for both guilds; unregistered players absent from home
+    assert "Nest Egg" in r.text
+    assert "a/b slash" not in r.text
 
 
 def test_guild_page_and_casing_merge(client):

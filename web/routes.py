@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request
 
+from processors.guilds import guild_key
 from web import service
 
 router = APIRouter()
@@ -17,10 +18,31 @@ def healthz():
 
 @router.get("/")
 def home(request: Request):
+    """Guild competition — the main event."""
     bundle = service.get_bundle()
+    scores = bundle["scores"]
+    guild_sections = []
+    for g in bundle["guilds"].to_dict("records"):
+        members = scores[scores["guild"].map(guild_key) == g["guild_key"]]
+        members = members.sort_values("score", ascending=False,
+                                      na_position="last")
+        guild_sections.append({"info": g, "members": members.to_dict("records")})
     return _render(request, "home.html", {
         "phase": bundle["phase"],
         "guilds": bundle["guilds"].to_dict("records"),
+        "guild_sections": guild_sections,
+        "race": service.get_guild_race_series(),
+        "prestige_race": service.get_prestige_race_series(),
+        "last_updated": bundle["last_updated"],
+    })
+
+
+@router.get("/leaderboard")
+def leaderboard(request: Request):
+    """Overall individual leaderboard — every player on egg9000."""
+    bundle = service.get_bundle()
+    return _render(request, "leaderboard.html", {
+        "phase": bundle["phase"],
         "scores": bundle["scores"].to_dict("records"),
         "last_updated": bundle["last_updated"],
     })

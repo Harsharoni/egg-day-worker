@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard — {{ SITE_TITLE }}{% endblock %}
+{% block content %}
+
+{% if phase == "pre" %}
+<section class="hero">
+  <h1>Competition starts soon</h1>
+  <p>Scores appear once the start snapshot is frozen. Current leaderboard below.</p>
+</section>
+{% endif %}
+
+<section>
+  <h2>Leaderboard</h2>
+  <div class="table-wrap">
+    <table class="num-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          <th class="hide-mobile">Discord</th>
+          <th class="hide-mobile">Guild</th>
+          <th data-tooltip="Soul Eggs gained since competition start.">SE Gain</th>
+          <th data-tooltip="Soul Eggs percentage gained since competition start.">SE %</th>
+          <th class="hide-mobile" data-tooltip="Earnings Bonus gained since competition start.">EB Gain</th>
+          <th class="hide-mobile" data-tooltip="Earnings Bonus percentage gained since competition start.">EB %</th>
+          <th class="hide-mobile"
+            data-tooltip="Fairness multiplier applied to SE gain. Lower-EB players receive a larger boost so all tiers can compete.">
+            Fair</th>
+          <th data-tooltip="Competition score = SE gained × fair factor ÷ 1 quintillion.">Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in scores %}
+        <tr>
+          <td>{{ p.rank }}</td>
+          <td><a href="/player/{{ p.discord_id }}?ei={{ p.ei_name | urlencode }}">{{ p.ei_name }}</a></td>
+          <td class="hide-mobile">{{ p.discord_name }}</td>
+          <td class="hide-mobile">{% if p.guild %}<a href="/guild/{{ p.guild | guild_key | urlencode }}">{{ p.guild
+              }}</a>{% else %}—{%
+            endif %}</td>
+          <td>{{ p.se_gain | mag }}</td>
+          <td>{{ p.se_gain_pct | pct }}</td>
+          <td class="hide-mobile">{{ p.eb_gain | mag }}</td>
+          <td class="hide-mobile">{{ p.eb_gain_pct | pct }}</td>
+          <td class="hide-mobile">{{ p.fair_factor | float_ }}</td>
+          <td class="strong">{{ p.score | int_ }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% endblock %}

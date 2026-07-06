@@ -4,62 +4,108 @@
 {% if phase == "pre" %}
 <section class="hero">
   <h1>Competition starts soon</h1>
-  <p>Scores appear once the start snapshot is frozen. Current leaderboard below.</p>
-</section>
-{% endif %}
-
-{% if guilds %}
-<section>
-  <h2>Guild race</h2>
-  <div class="table-wrap">
-  <table class="num-table">
-    <thead><tr><th>#</th><th>Guild</th><th>Members</th><th>Σ Score</th><th>Guild Score</th></tr></thead>
-    <tbody>
-    {% for g in guilds %}
-      <tr>
-        <td>{{ g.rank }}</td>
-        <td><a href="/guild/{{ g.guild_key | urlencode }}">{{ g.guild }}</a></td>
-        <td>{{ g.member_count }}</td>
-        <td>{{ g.sum_score | int_ }}</td>
-        <td class="strong">{{ g.guild_score | int_ }}</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  </div>
+  <p>Guild standings appear once the start snapshot is frozen.</p>
 </section>
 {% endif %}
 
 <section>
-  <h2>Scoreboard</h2>
+  <h2>Guild Competition</h2>
+  {% if guilds %}
   <div class="table-wrap">
-  <table class="num-table">
-    <thead>
-      <tr>
-        <th>#</th><th>Player</th><th>Discord</th><th>Guild</th>
-        <th>SE Start</th><th>SE Now</th><th>SE Gain</th><th>SE %</th>
-        <th>EB %</th><th>Fair</th><th>Score</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for p in scores %}
-      <tr>
-        <td>{{ p.rank }}</td>
-        <td><a href="/player/{{ p.discord_id }}?ei={{ p.ei_name | urlencode }}">{{ p.ei_name }}</a></td>
-        <td>{{ p.discord_name }}</td>
-        <td>{% if p.guild %}<a href="/guild/{{ p.guild | guild_key | urlencode }}">{{ p.guild }}</a>{% else %}—{% endif %}</td>
-        <td>{{ p.se_start | mag }}</td>
-        <td>{{ p.se_end | mag }}</td>
-        <td>{{ p.se_gain | mag }}</td>
-        <td>{{ p.se_gain_pct | pct }}</td>
-        <td>{{ p.eb_gain_pct | pct }}</td>
-        <td>{{ p.fair_factor | float_ }}</td>
-        <td class="strong">{{ p.score | int_ }}</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+    <table class="num-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Guild</th>
+          <th class="hide-mobile">Players</th>
+          <th class="hide-mobile" data-tooltip="Total Soul Eggs gained by all guild members since competition start.">SE
+            Gained</th>
+          <th class="hide-mobile"
+            data-tooltip="Total Earnings Bonus gained by all guild members since competition start.">EB Gained</th>
+          <th class="hide-mobile" data-tooltip="Raw sum of all member scores before the guild-size adjustment.">Σ Score
+          </th>
+          <th data-tooltip="Sum of member scores ÷ active members^fairness. Rewards quality over raw headcount.">Guild
+            Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for g in guilds %}
+        <tr>
+          <td>{{ g.rank }}</td>
+          <td><a href="/guild/{{ g.guild_key | urlencode }}">{{ g.guild }}</a></td>
+          <td class="hide-mobile">{{ g.member_count }}</td>
+          <td class="hide-mobile">{{ g.se_gain | mag }}</td>
+          <td class="hide-mobile">{{ g.eb_gain | mag }}</td>
+          <td class="hide-mobile">{{ g.sum_score | int_ }}</td>
+          <td class="strong">{{ g.guild_score | int_ }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
+  {% else %}
+  <p class="sub">No guilds yet — standings appear as registrations sync.</p>
+  {% endif %}
 </section>
 
+{% if race.datasets %}
+<section>
+  <h2>Guild score over time</h2>
+  <div class="chart-box">
+    <canvas data-series="race-data" data-field="datasets" data-kind="plain"></canvas>
+  </div>
+  <script type="application/json" id="race-data">{{ race | tojson }}</script>
+</section>
+{% endif %}
+
+{% if prestige_race.datasets %}
+<section>
+  <h2 data-tooltip="Total prestiges of all guild members, one line per guild.">Guild total prestiges</h2>
+  <div class="chart-box">
+    <canvas data-series="prestige-race-data" data-field="datasets" data-kind="plain"></canvas>
+  </div>
+  <script type="application/json" id="prestige-race-data">{{ prestige_race | tojson }}</script>
+</section>
+{% endif %}
+
+{% for s in guild_sections %}
+<section>
+  <h2><a href="/guild/{{ s.info.guild_key | urlencode }}">{{ s.info.guild }}</a>
+    <span class="sub-inline">guild score {{ s.info.guild_score | int_ }}</span>
+  </h2>
+  <div class="table-wrap">
+    <table class="num-table">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th class="hide-mobile">Discord</th>
+          <th data-tooltip="Soul Eggs gained since competition start.">SE Gain</th>
+          <th data-tooltip="Soul Eggs percentage gained since competition start.">SE %</th>
+          <th class="hide-mobile" data-tooltip="Earnings Bonus gained since competition start.">EB Gain</th>
+          <th class="hide-mobile" data-tooltip="Earnings Bonus percentage gained since competition start.">EB %</th>
+          <th data-tooltip="Individual competition score = SE gained × fair factor ÷ 1 quintillion.">Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in s.members %}
+        <tr>
+          <td><a href="/player/{{ m.discord_id }}?ei={{ m.ei_name | urlencode }}">{{ m.ei_name }}</a></td>
+          <td class="hide-mobile">{{ m.discord_name }}</td>
+          <td>{{ m.se_gain | mag }}</td>
+          <td>{{ m.se_gain_pct | pct }}</td>
+          <td class="hide-mobile">{{ m.eb_gain | mag }}</td>
+          <td class="hide-mobile">{{ m.eb_gain_pct | pct }}</td>
+          <td class="strong">{{ m.score | int_ }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endfor %}
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/vendor/chart.umd.js"></script>
 {% endblock %}

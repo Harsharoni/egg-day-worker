@@ -9,6 +9,10 @@
 <body data-phase="{{ phase }}">
 <header class="site-header">
   <a class="brand" href="/">🥚 {{ SITE_TITLE }}</a>
+  <nav class="site-nav">
+    <a href="/" {% if request.url.path == "/" %}class="active"{% endif %}>Guilds</a>
+    <a href="/leaderboard" {% if request.url.path == "/leaderboard" %}class="active"{% endif %}>Leaderboard</a>
+  </nav>
   <div id="countdown" data-start-epoch="{{ START_EPOCH }}" data-end-epoch="{{ END_EPOCH }}"></div>
 </header>
 <main>

@@ -6,41 +6,67 @@
   <h1>{{ info.guild }}</h1>
   <p class="sub">Guild rank {{ info.rank }} · {{ info.member_count }} member{{ "s" if info.member_count != 1 }}</p>
   <div class="stat-tiles">
-    <div class="tile"><span class="label">Guild score</span><span class="value">{{ info.guild_score | int_ }}</span></div>
-    <div class="tile"><span class="label">Σ member scores</span><span class="value">{{ info.sum_score | int_ }}</span></div>
+    <div class="tile tile--accent"><span class="label"
+        data-tooltip="Sum of member scores ÷ active members^fairness. Rewards quality over raw headcount.">Guild
+        score</span><span class="value">{{ info.guild_score | int_ }}</span></div>
+    <div class="tile"><span class="label"
+        data-tooltip="Raw sum of all member scores before the guild-size adjustment.">Σ member scores</span><span
+        class="value">{{ info.sum_score | int_ }}</span></div>
   </div>
 </section>
 
 <section>
   <h2>Members</h2>
   <div class="table-wrap">
-  <table class="num-table">
-    <thead><tr><th>#</th><th>Player</th><th>Discord</th><th>SE Gain</th><th>SE %</th><th>Score</th></tr></thead>
-    <tbody>
-    {% for m in members %}
-      <tr>
-        <td>{{ m.rank }}</td>
-        <td><a href="/player/{{ m.discord_id }}?ei={{ m.ei_name | urlencode }}">{{ m.ei_name }}</a></td>
-        <td>{{ m.discord_name }}</td>
-        <td>{{ m.se_gain | mag }}</td>
-        <td>{{ m.se_gain_pct | pct }}</td>
-        <td class="strong">{{ m.score | int_ }}</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+    <table class="num-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          <th class="hide-mobile">Discord</th>
+          <th data-tooltip="Soul Eggs gained since competition start.">SE Gain</th>
+          <th data-tooltip="Soul Eggs percentage gained since competition start.">SE %</th>
+          <th class="hide-mobile" data-tooltip="Earnings Bonus gained since competition start.">EB Gain</th>
+          <th class="hide-mobile" data-tooltip="Earnings Bonus percentage gained since competition start.">EB %</th>
+          <th data-tooltip="Individual competition score = SE gained × fair factor ÷ 1 quintillion.">Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in members %}
+        <tr>
+          <td>{{ m.rank }}</td>
+          <td><a href="/player/{{ m.discord_id }}?ei={{ m.ei_name | urlencode }}">{{ m.ei_name }}</a></td>
+          <td class="hide-mobile">{{ m.discord_name }}</td>
+          <td>{{ m.se_gain | mag }}</td>
+          <td>{{ m.se_gain_pct | pct }}</td>
+          <td class="hide-mobile">{{ m.eb_gain | mag }}</td>
+          <td class="hide-mobile">{{ m.eb_gain_pct | pct }}</td>
+          <td class="strong">{{ m.score | int_ }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 </section>
 
 <section>
-  <h2>Guild soul eggs</h2>
+  <h2>Progress</h2>
   {% if series.labels %}
   <div class="chart-box">
-    <canvas id="guild-chart" data-series="guild-data" data-kind="se"></canvas>
+    <h3>Guild score</h3>
+    <canvas data-series="guild-data" data-field="score" data-kind="plain" data-label="Guild score"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>SE gained</h3>
+    <canvas data-series="guild-data" data-field="se_gain" data-kind="mag" data-label="SE gained"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>EB gained</h3>
+    <canvas data-series="guild-data" data-field="eb_gain" data-kind="mag" data-label="EB gained"></canvas>
   </div>
   <script type="application/json" id="guild-data">{{ series | tojson }}</script>
   {% else %}
-  <p class="sub">Chart appears once the competition starts.</p>
+  <p class="sub">Charts appear once the competition starts.</p>
   {% endif %}
 </section>
 
