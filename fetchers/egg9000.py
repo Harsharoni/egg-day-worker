@@ -13,6 +13,8 @@ def fetch_leaderboard() -> pd.DataFrame:
     Columns: discord_name, discord_id, ei_name, earnings_bonus, soul_eggs,
              prophecy_eggs, mer, truth_eggs, num_prestiges, rank
     """
+    if not EGG9000_API_KEY:
+        raise RuntimeError("EGG9000_API_KEY is not set")
     response = requests.get(
         _URL,
         headers={"X-API-Key": EGG9000_API_KEY},

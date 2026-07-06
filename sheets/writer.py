@@ -12,6 +12,8 @@ _SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
 
 def _open_worksheet(sheet_name: str) -> gspread.Worksheet:
+    if not SPREADSHEET_ID:
+        raise RuntimeError("SPREADSHEET_ID is not set")
     creds = Credentials.from_service_account_file(GOOGLE_SERVICE_ACCOUNT_FILE, scopes=_SCOPES)
     gc = gspread.authorize(creds)
     return gc.open_by_key(SPREADSHEET_ID).worksheet(sheet_name)

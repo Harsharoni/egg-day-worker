@@ -4,14 +4,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-EGG9000_API_KEY: str = os.environ["EGG9000_API_KEY"]
+# Worker-only secrets: empty is allowed so the web app and tests can import
+# config without them; fetchers/sheets raise at point of use when missing.
+EGG9000_API_KEY: str = os.getenv("EGG9000_API_KEY", "")
 
 GOOGLE_SERVICE_ACCOUNT_FILE: str = os.getenv("GOOGLE_SERVICE_ACCOUNT_FILE", "creds.json")
 
 # Spreadsheet IDs (the long token in the sheet URL between /d/ and /edit).
 # Opening by ID needs only the Sheets API scope; opening by name would
 # require the Drive API.
-SPREADSHEET_ID: str = os.environ["SPREADSHEET_ID"]
+SPREADSHEET_ID: str = os.getenv("SPREADSHEET_ID", "")
 SCOREBOARD_WORKSHEET: str = os.getenv("SCOREBOARD_WORKSHEET", "Scoreboard")
 
 # Google Form responses spreadsheet for registration. Leave ID empty to
@@ -36,3 +38,11 @@ COMP_END_UTC = datetime.fromisoformat(
 )
 
 FAIR_POWER: float = float(os.getenv("FAIR_POWER", "0.235"))
+
+# Guild race: guild_score = round(sum(member scores) / N^GUILD_FAIR_POWER).
+# 0 = pure sum (size dominates), 1 = pure average (size irrelevant).
+GUILD_FAIR_POWER: float = float(os.getenv("GUILD_FAIR_POWER", "0.5"))
+
+# Website
+SITE_CACHE_TTL_SECONDS: int = int(os.getenv("SITE_CACHE_TTL_SECONDS", "60"))
+SITE_TITLE: str = os.getenv("SITE_TITLE", "Egg Day 2026")

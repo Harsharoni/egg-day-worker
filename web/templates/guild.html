@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ info.guild }} — {{ SITE_TITLE }}{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <h1>{{ info.guild }}</h1>
+  <p class="sub">Guild rank {{ info.rank }} · {{ info.member_count }} member{{ "s" if info.member_count != 1 }}</p>
+  <div class="stat-tiles">
+    <div class="tile"><span class="label">Guild score</span><span class="value">{{ info.guild_score | int_ }}</span></div>
+    <div class="tile"><span class="label">Σ member scores</span><span class="value">{{ info.sum_score | int_ }}</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Members</h2>
+  <div class="table-wrap">
+  <table class="num-table">
+    <thead><tr><th>#</th><th>Player</th><th>Discord</th><th>SE Gain</th><th>SE %</th><th>Score</th></tr></thead>
+    <tbody>
+    {% for m in members %}
+      <tr>
+        <td>{{ m.rank }}</td>
+        <td><a href="/player/{{ m.discord_id }}?ei={{ m.ei_name | urlencode }}">{{ m.ei_name }}</a></td>
+        <td>{{ m.discord_name }}</td>
+        <td>{{ m.se_gain | mag }}</td>
+        <td>{{ m.se_gain_pct | pct }}</td>
+        <td class="strong">{{ m.score | int_ }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Guild soul eggs</h2>
+  {% if series.labels %}
+  <div class="chart-box">
+    <canvas id="guild-chart" data-series="guild-data" data-kind="se"></canvas>
+  </div>
+  <script type="application/json" id="guild-data">{{ series | tojson }}</script>
+  {% else %}
+  <p class="sub">Chart appears once the competition starts.</p>
+  {% endif %}
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/vendor/chart.umd.js"></script>
+{% endblock %}

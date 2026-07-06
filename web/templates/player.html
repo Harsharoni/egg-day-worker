@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}{{ row.ei_name if row else "Player" }} — {{ SITE_TITLE }}{% endblock %}
+{% block content %}
+
+{% if row is none %}
+<section class="hero">
+  <h1>Pick an account</h1>
+  <ul class="account-list">
+    {% for name in accounts %}
+    <li><a href="/player/{{ discord_id }}?ei={{ name | urlencode }}">{{ name }}</a></li>
+    {% endfor %}
+  </ul>
+</section>
+{% else %}
+
+<section class="hero">
+  <h1>{{ row.ei_name }}</h1>
+  <p class="sub">
+    {{ row.discord_name }}
+    {% if row.guild %} · <a href="/guild/{{ row.guild | guild_key | urlencode }}">{{ row.guild }}</a>{% endif %}
+    · Rank {{ row.rank }}
+  </p>
+  <div class="stat-tiles">
+    <div class="tile"><span class="label">Score</span><span class="value">{{ row.score | int_ }}</span></div>
+    <div class="tile"><span class="label">Fair factor</span><span class="value">{{ row.fair_factor | float_ }}</span></div>
+    <div class="tile"><span class="label">SE gain</span><span class="value">{{ row.se_gain | mag }}</span></div>
+    <div class="tile"><span class="label">SE gain %</span><span class="value">{{ row.se_gain_pct | pct }}</span></div>
+  </div>
+</section>
+
+{% if accounts | length > 1 %}
+<p class="alt-links">Alts:
+  {% for name in accounts if name != row.ei_name %}
+  <a href="/player/{{ discord_id }}?ei={{ name | urlencode }}">{{ name }}</a>
+  {% endfor %}
+</p>
+{% endif %}
+
+<section>
+  <h2>Stats</h2>
+  <div class="table-wrap">
+  <table class="num-table">
+    <thead><tr><th></th><th>Start</th><th>Now</th><th>Gain</th><th>Gain %</th></tr></thead>
+    <tbody>
+      <tr><td>Soul Eggs</td><td>{{ row.se_start | mag }}</td><td>{{ row.se_end | mag }}</td><td>{{ row.se_gain | mag }}</td><td>{{ row.se_gain_pct | pct }}</td></tr>
+      <tr><td>Earnings Bonus</td><td>{{ row.eb_start | mag }}</td><td>{{ row.eb_end | mag }}</td><td>{{ row.eb_gain | mag }}</td><td>{{ row.eb_gain_pct | pct }}</td></tr>
+      <tr><td>Prophecy Eggs</td><td>{{ row.pe_start | int_ }}</td><td>{{ row.pe_end | int_ }}</td><td>{{ row.pe_gain | int_ }}</td><td>—</td></tr>
+      <tr><td>Truth Eggs</td><td>{{ row.te_start | int_ }}</td><td>{{ row.te_end | int_ }}</td><td>{{ row.te_gain | int_ }}</td><td>—</td></tr>
+      <tr><td>MER</td><td>{{ row.mer_start | float_ }}</td><td>{{ row.mer_end | float_ }}</td><td>{{ row.mer_gain | float_ }}</td><td>—</td></tr>
+      <tr><td>Prestiges</td><td>{{ row.prestiges_start | int_ }}</td><td>{{ row.prestiges_end | int_ }}</td><td>{{ row.prestiges_gain | int_ }}</td><td>—</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Progress</h2>
+  {% if series and series.labels %}
+  <div class="chart-box">
+    <h3>Soul eggs</h3>
+    <canvas id="se-chart" data-series="se-data" data-kind="se"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>Leaderboard rank</h3>
+    <canvas id="rank-chart" data-series="se-data" data-kind="rank"></canvas>
+  </div>
+  <script type="application/json" id="se-data">{{ series | tojson }}</script>
+  {% else %}
+  <p class="sub">Charts appear once the competition starts.</p>
+  {% endif %}
+</section>
+
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/vendor/chart.umd.js"></script>
+{% endblock %}

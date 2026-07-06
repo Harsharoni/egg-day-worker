@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS player_data (
     PRIMARY KEY (discord_id, ei_name, timestamp)
 );
 
+CREATE INDEX IF NOT EXISTS player_data_ts_idx ON player_data (timestamp);
+
 CREATE TABLE IF NOT EXISTS latest_snapshot (
     discord_id      BIGINT      NOT NULL,
     discord_name    TEXT        NOT NULL,
