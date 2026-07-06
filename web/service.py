@@ -152,9 +152,11 @@ def get_score_history() -> pd.DataFrame:
         if hist.empty or start.empty:
             return pd.DataFrame(columns=_SH_COLS)
 
-        base = start[["discord_id", "ei_name", "soul_eggs", "earnings_bonus"]]
+        base = start[["discord_id", "ei_name", "soul_eggs", "earnings_bonus",
+                      "num_prestiges"]]
         base = base.rename(columns={"soul_eggs": "se_start",
-                                    "earnings_bonus": "eb_start"})
+                                    "earnings_bonus": "eb_start",
+                                    "num_prestiges": "prestiges_start"})
         max_eb = start["earnings_bonus"].max()
 
         df = hist.merge(base, on=["discord_id", "ei_name"], how="inner")
@@ -163,7 +165,7 @@ def get_score_history() -> pd.DataFrame:
         fair = ((max_eb / avg_eb) ** FAIR_POWER).round(3)
         df["se_gain"] = df["soul_eggs"] - df["se_start"]
         df["eb_gain"] = df["earnings_bonus"] - df["eb_start"]
-        df["prestiges"] = df["num_prestiges"]
+        df["prestiges"] = df["num_prestiges"] - df["prestiges_start"]
         df["score"] = (df["se_gain"] * fair / 1e18).round()
 
         guilds = get_bundle()["scores"][["discord_id", "ei_name", "guild"]].copy()
@@ -243,5 +245,5 @@ def get_guild_race_series() -> dict:
 
 
 def get_prestige_race_series() -> dict:
-    """Total prestiges over time, one dataset per guild."""
+    """Prestiges gained since comp start, one dataset per guild."""
     return _race_series("prace", lambda p: p["prestiges"].sum(axis=1))
