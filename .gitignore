@@ -1,0 +1,10 @@
+.venv/
+.env
+service_account.json
+__pycache__/
+*.pyc
+*.pyo
+.idea/
+*.egg-info/
+dist/
+build/
