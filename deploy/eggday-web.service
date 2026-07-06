@@ -7,7 +7,7 @@ Wants=network-online.target
 User=harsh
 WorkingDirectory=/srv/eggday/egg-day-worker
 # Single worker on purpose: the TTL cache is in-process.
-ExecStart=/home/harsh/.local/bin/uv run uvicorn web.app:app --host 127.0.0.1 --port 8100 --workers 1
+ExecStart=/home/egger/.local/bin/uv run uvicorn web.app:app --host 127.0.0.1 --port 8100 --workers 1
 Restart=on-failure
 RestartSec=5
 
