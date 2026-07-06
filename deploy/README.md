@@ -3,19 +3,24 @@
 The site is a second process next to the worker: uvicorn on localhost:8100,
 published through the existing Cloudflare tunnel as `eggday.<site>`.
 
-## 1. systemd unit
+## 1. systemd units
+
+Two separate processes: the polling worker (`main.py`) and the website.
+Both need their own unit — running either with a bare `uv run ...` in an SSH
+session dies the moment the session closes, and won't restart on crash or
+reboot.
 
 ```bash
-sudo cp deploy/eggday-web.service /etc/systemd/system/
+sudo cp deploy/eggday-web.service deploy/eggday-worker.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now eggday-web
-journalctl -u eggday-web -f   # logs
+sudo systemctl enable --now eggday-web eggday-worker
+journalctl -u eggday-web -u eggday-worker -f   # tail both; Ctrl-C just stops watching, not the services
 ```
 
 `WorkingDirectory=` points at `/srv/eggday/egg-day-worker` — update it (and
-`User=`, and the `uv` path via `which uv`) if the VPS layout differs. `.env`
-is read from the working directory by `config.py`, so no `EnvironmentFile=`
-is needed.
+`User=`, and the `uv` path via `which uv`) in both files if the VPS layout
+differs. `.env` is read from the working directory by `config.py`, so no
+`EnvironmentFile=` is needed.
 
 ## 2. Cloudflare tunnel ingress
 

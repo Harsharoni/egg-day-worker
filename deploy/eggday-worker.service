@@ -1,0 +1,14 @@
+[Unit]
+Description=Egg Day polling worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=harsh
+WorkingDirectory=/srv/eggday/egg-day-worker
+ExecStart=/home/egger/.local/bin/uv run main.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
