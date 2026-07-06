@@ -48,6 +48,9 @@ def write_scoreboard(df: pd.DataFrame) -> None:
     ]:
         stat_cols += [f"{short}_start", f"{short}_end", f"{short}_gain"]
         stat_header += [f"{label} Start", f"{label} End", f"{label} Gain"]
+        if short in ("se", "eb"):
+            stat_cols.append(f"{short}_gain_pct")
+            stat_header.append(f"{label} Gain %")
 
     _dump(
         SCOREBOARD_WORKSHEET,

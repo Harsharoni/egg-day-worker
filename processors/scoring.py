@@ -42,6 +42,11 @@ def compute_scores(start_df: pd.DataFrame, end_df: pd.DataFrame,
         scores[f"{short}_end"] = end[col].values
         scores[f"{short}_gain"] = (end[col] - start[col]).values
 
+    for short in ("se", "eb"):
+        start_vals = scores[f"{short}_start"]
+        pct = scores[f"{short}_gain"] / start_vals.where(start_vals != 0) * 100
+        scores[f"{short}_gain_pct"] = pct.fillna(0).round(2)
+
     scores["fair_factor"] = fair.values
     scores["score"] = (se_gain * fair / 1e18).round().astype("int64").values
     scores = scores.reset_index()  # discord_id, ei_name back as columns
