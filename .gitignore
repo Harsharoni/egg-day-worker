@@ -1,6 +1,9 @@
 .venv/
 .env
-service_account.json
+creds.json
+*.db
+gains/
+*Zone.Identifier
 __pycache__/
 *.pyc
 *.pyo
