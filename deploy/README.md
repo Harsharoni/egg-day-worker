@@ -12,9 +12,10 @@ sudo systemctl enable --now eggday-web
 journalctl -u eggday-web -f   # logs
 ```
 
-Adjust `User=`, `WorkingDirectory=` and the `uv` path (`which uv`) if the VPS
-layout differs. `.env` is read from the working directory by `config.py`,
-so no `EnvironmentFile=` is needed.
+`WorkingDirectory=` points at `/srv/eggday/egg-day-worker` — update it (and
+`User=`, and the `uv` path via `which uv`) if the VPS layout differs. `.env`
+is read from the working directory by `config.py`, so no `EnvironmentFile=`
+is needed.
 
 ## 2. Cloudflare tunnel ingress
 
