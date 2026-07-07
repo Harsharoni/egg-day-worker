@@ -170,6 +170,28 @@
     });
   }
 
+  /* ---- leaderboard search ------------------------------------------ */
+  var search = document.getElementById("player-search");
+  if (search) {
+    var rows = document.querySelectorAll("#leaderboard-table tbody tr");
+    var empty = document.getElementById("search-empty");
+    var emptyTerm = empty ? empty.querySelector("span") : null;
+
+    search.addEventListener("input", function () {
+      var term = search.value.trim().toLowerCase();
+      var shown = 0;
+      rows.forEach(function (row) {
+        var match = !term || row.dataset.search.indexOf(term) !== -1;
+        row.hidden = !match;
+        if (match) shown++;
+      });
+      if (empty) {
+        empty.hidden = shown !== 0;
+        if (emptyTerm) emptyTerm.textContent = search.value.trim();
+      }
+    });
+  }
+
   /* ---- gentle auto-refresh while the comp is live ------------------ */
   if (document.body.dataset.phase === "live") {
     setTimeout(function () { location.reload(); }, 120000);

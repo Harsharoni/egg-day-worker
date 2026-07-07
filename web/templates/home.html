@@ -74,7 +74,16 @@
     <span class="sub-inline">guild score {{ s.info.guild_score | int_ }}</span>
   </h2>
   <div class="table-wrap">
-    <table class="num-table">
+    <table class="num-table roster-table">
+      <colgroup>
+        <col class="col-player">
+        <col class="col-discord hide-mobile">
+        <col class="col-num">
+        <col class="col-num">
+        <col class="col-num hide-mobile">
+        <col class="col-num hide-mobile">
+        <col class="col-num">
+      </colgroup>
       <thead>
         <tr>
           <th>Player</th>

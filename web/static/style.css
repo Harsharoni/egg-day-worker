@@ -155,6 +155,26 @@ h3 {
   color: var(--accent);
 }
 
+.search-wrap {
+  margin: 0 0 0.6rem;
+}
+
+#player-search {
+  width: 100%;
+  max-width: 22rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+#player-search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
 .table-wrap {
   overflow-x: auto;
   background: var(--surface);
@@ -187,6 +207,29 @@ td {
 .num-table td:nth-child(2) {
   white-space: normal;
   min-width: 5rem;
+}
+
+/* roster-table: fixed col widths so columns line up across every guild tile */
+.roster-table {
+  table-layout: fixed;
+}
+
+.roster-table col.col-player {
+  width: 26%;
+}
+
+.roster-table col.col-discord {
+  width: 22%;
+}
+
+.roster-table col.col-num {
+  width: 13%;
+}
+
+.roster-table td:nth-child(1),
+.roster-table td:nth-child(2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
