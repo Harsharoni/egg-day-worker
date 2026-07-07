@@ -7,6 +7,8 @@
   --grid: #e1e0d9;
   --border: rgba(11, 11, 11, 0.10);
   --accent: #2a78d6;
+  --gain-pos: #1a8f3c;
+  --gain-neg: #c0392b;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,6 +21,8 @@
     --grid: #2c2c2a;
     --border: rgba(255, 255, 255, 0.10);
     --accent: #3987e5;
+    --gain-pos: #3ecf6a;
+    --gain-neg: #e5695c;
   }
 }
 
@@ -87,7 +91,7 @@ a:hover {
 }
 
 main {
-  max-width: 72rem;
+  max-width: 94rem;
   margin: 0 auto;
   padding: 1rem 1.25rem 3rem;
 }
@@ -209,22 +213,87 @@ td {
   min-width: 5rem;
 }
 
+/* leaderboard: 13 cols of unconstrained content overflow even wide
+   screens. Fixed widths keep it scroll-free; text-heavy cols (name/
+   discord/guild/fair) ellipsize — hover shows the full value via title. */
+#leaderboard-table {
+  table-layout: fixed;
+}
+
+#leaderboard-table th:nth-child(1),
+#leaderboard-table td:nth-child(1) { width: 3rem; }
+
+#leaderboard-table th:nth-child(2),
+#leaderboard-table td:nth-child(2) {
+  width: 7.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+#leaderboard-table th:nth-child(3),
+#leaderboard-table td:nth-child(3) {
+  width: 5.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#leaderboard-table th:nth-child(4),
+#leaderboard-table td:nth-child(4) {
+  width: 2.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#leaderboard-table th:nth-child(5),
+#leaderboard-table td:nth-child(5),
+#leaderboard-table th:nth-child(6),
+#leaderboard-table td:nth-child(6) { width: 5.875rem; }
+
+#leaderboard-table th:nth-child(7),
+#leaderboard-table td:nth-child(7),
+#leaderboard-table th:nth-child(9),
+#leaderboard-table td:nth-child(9) { width: 5.625rem; }
+
+#leaderboard-table th:nth-child(8),
+#leaderboard-table td:nth-child(8),
+#leaderboard-table th:nth-child(10),
+#leaderboard-table td:nth-child(10) { width: 5.5rem; }
+
+#leaderboard-table th:nth-child(11),
+#leaderboard-table td:nth-child(11) {
+  width: 4.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#leaderboard-table th:nth-child(12),
+#leaderboard-table td:nth-child(12) {
+  width: 5.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#leaderboard-table th:nth-child(13),
+#leaderboard-table td:nth-child(13) { width: 4.5rem; }
+
+
 /* roster-table: fixed col widths so columns line up across every guild tile */
 .roster-table {
   table-layout: fixed;
 }
 
 .roster-table col.col-player {
-  width: 26%;
-}
-
-.roster-table col.col-discord {
   width: 22%;
 }
 
-.roster-table col.col-num {
-  width: 13%;
+.roster-table col.col-discord {
+  width: 16%;
 }
+
+/* col-num cols get no explicit width: table-layout:fixed splits the
+   remainder evenly across them, however many there are. */
 
 .roster-table td:nth-child(1),
 .roster-table td:nth-child(2) {
@@ -248,6 +317,53 @@ tbody tr:nth-child(even) {
 
 .strong {
   font-weight: 700;
+}
+
+.gain-pos {
+  color: var(--gain-pos);
+}
+
+.gain-neg {
+  color: var(--gain-neg);
+}
+
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+  text-decoration: underline dotted var(--muted);
+  text-underline-offset: 3px;
+}
+
+th.sortable:hover {
+  color: var(--accent);
+}
+
+th.sortable::after {
+  content: "⇅";
+  display: inline-block;
+  width: 1em;
+  margin-left: 0.25em;
+  opacity: 0.4;
+  font-size: 0.8em;
+}
+
+th.sortable:hover::after {
+  opacity: 0.8;
+}
+
+th.sort-asc::after,
+th.sort-desc::after {
+  opacity: 1;
+  color: var(--accent);
+  font-size: 0.7em;
+}
+
+th.sort-asc::after {
+  content: "▲";
+}
+
+th.sort-desc::after {
+  content: "▼";
 }
 
 .account-list {
@@ -282,7 +398,7 @@ tbody tr:nth-child(even) {
 }
 
 .site-footer {
-  max-width: 72rem;
+  max-width: 94rem;
   margin: 0 auto;
   padding: 1rem 1.25rem 2rem;
   color: var(--muted);

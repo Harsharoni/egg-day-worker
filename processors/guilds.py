@@ -17,12 +17,13 @@ def compute_guild_standings(scores: pd.DataFrame,
     Guild names are free text from the registration form — rows group on
     guild_key, display name is the most common original spelling.
 
-    Returns columns: rank, guild_key, guild, member_count, se_gain,
-    eb_gain, sum_score, guild_score — sorted by guild_score descending.
-    Empty DataFrame with those columns if no guild rows exist.
+    Returns columns: rank, guild_key, guild, member_count, se_start,
+    eb_start, se_gain, eb_gain, sum_score, guild_score — sorted by
+    guild_score descending. Empty DataFrame with those columns if no guild
+    rows exist.
     """
-    cols = ["rank", "guild_key", "guild", "member_count",
-            "se_gain", "eb_gain", "sum_score", "guild_score"]
+    cols = ["rank", "guild_key", "guild", "member_count", "se_start",
+            "eb_start", "se_gain", "eb_gain", "sum_score", "guild_score"]
     if scores.empty or "guild" not in scores.columns:
         return pd.DataFrame(columns=cols)
 
@@ -33,9 +34,9 @@ def compute_guild_standings(scores: pd.DataFrame,
         return pd.DataFrame(columns=cols)
 
     df["score"] = pd.to_numeric(df["score"], errors="coerce").fillna(0)
-    for gain_col in ("se_gain", "eb_gain"):
-        df[gain_col] = (pd.to_numeric(df.get(gain_col), errors="coerce")
-                        .fillna(0) if gain_col in df.columns else 0.0)
+    for col in ("se_start", "eb_start", "se_gain", "eb_gain"):
+        df[col] = (pd.to_numeric(df.get(col), errors="coerce").fillna(0)
+                   if col in df.columns else 0.0)
 
     def _one(g: pd.DataFrame) -> pd.Series:
         display = g["guild"].str.strip().value_counts().index[0]
@@ -44,6 +45,8 @@ def compute_guild_standings(scores: pd.DataFrame,
         return pd.Series({
             "guild": display,
             "member_count": len(g),
+            "se_start": g["se_start"].sum(),
+            "eb_start": g["eb_start"].sum(),
             "se_gain": g["se_gain"].sum(),
             "eb_gain": g["eb_gain"].sum(),
             "sum_score": int(total),

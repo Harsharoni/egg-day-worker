@@ -14,39 +14,62 @@
   <div class="search-wrap">
     <input type="search" id="player-search" placeholder="Search player, discord, or guild…" autocomplete="off">
   </div>
+  <p class="sub">Click a column header to sort.</p>
   <div class="table-wrap">
     <table class="num-table" id="leaderboard-table">
       <thead>
         <tr>
-          <th>#</th>
-          <th>Player</th>
+          <th class="sortable" data-sort-key="rank">#</th>
+          <th class="sortable" data-sort-key="player" data-sort-type="text">Player</th>
           <th class="hide-mobile">Discord</th>
           <th class="hide-mobile">Guild</th>
-          <th data-tooltip="Soul Eggs gained since competition start.">SE Gain</th>
-          <th data-tooltip="Soul Eggs percentage gained since competition start.">SE %</th>
-          <th class="hide-mobile" data-tooltip="Earnings Bonus gained since competition start.">EB Gain</th>
-          <th class="hide-mobile" data-tooltip="Earnings Bonus percentage gained since competition start.">EB %</th>
+          <th class="hide-mobile sortable" data-sort-key="seStart" data-tooltip="Soul Eggs held at competition start.">
+            Start SE</th>
+          <th class="hide-mobile sortable" data-sort-key="ebStart"
+            data-tooltip="Earnings Bonus held at competition start.">Start EB</th>
+          <th class="sortable" data-sort-key="seGain" data-tooltip="Soul Eggs gained since competition start.">SE Gain</th>
+          <th class="sortable" data-sort-key="sePct"
+            data-tooltip="Soul Eggs percentage gained since competition start.">SE Gain %</th>
+          <th class="hide-mobile sortable" data-sort-key="ebGain"
+            data-tooltip="Earnings Bonus gained since competition start.">EB Gain</th>
+          <th class="hide-mobile sortable" data-sort-key="ebPct"
+            data-tooltip="Earnings Bonus percentage gained since competition start.">EB Gain %</th>
+          <th class="hide-mobile sortable" data-sort-key="prestiges"
+            data-tooltip="Prestiges completed since competition start.">Prestiges</th>
           <th class="hide-mobile"
             data-tooltip="Fairness multiplier applied to SE gain. Lower-EB players receive a larger boost so all tiers can compete.">
-            Fair</th>
-          <th data-tooltip="Competition score = SE gained × fair factor ÷ 1 quintillion.">Score</th>
+            Fair Factor mult.</th>
+          <th class="sortable sort-desc" data-sort-key="score"
+            data-tooltip="Competition score = SE gained × fair factor ÷ 1 quintillion.">Score</th>
         </tr>
       </thead>
       <tbody>
         {% for p in scores %}
-        <tr data-search="{{ [p.ei_name, p.discord_name, p.guild] | select | join(' ') | lower }}">
+        <tr data-search="{{ [p.ei_name, p.discord_name, p.guild] | select | join(' ') | lower }}"
+          data-rank="{{ p.rank }}" data-player="{{ p.ei_name | lower }}"
+          data-se-start="{{ p.se_start if p.se_start is not none }}"
+          data-eb-start="{{ p.eb_start if p.eb_start is not none }}"
+          data-se-gain="{{ p.se_gain if p.se_gain is not none }}"
+          data-se-pct="{{ p.se_gain_pct if p.se_gain_pct is not none }}"
+          data-eb-gain="{{ p.eb_gain if p.eb_gain is not none }}"
+          data-eb-pct="{{ p.eb_gain_pct if p.eb_gain_pct is not none }}"
+          data-prestiges="{{ p.prestiges_gain if p.prestiges_gain is not none }}"
+          data-score="{{ p.score if p.score is not none }}">
           <td>{{ p.rank }}</td>
-          <td><a href="/player/{{ p.discord_id }}?ei={{ p.ei_name | urlencode }}">{{ p.ei_name }}</a></td>
-          <td class="hide-mobile">{{ p.discord_name }}</td>
-          <td class="hide-mobile">{% if p.guild %}<a href="/guild/{{ p.guild | guild_key | urlencode }}">{{ p.guild
-              }}</a>{% else %}—{%
+          <td title="{{ p.ei_name }}"><a href="/player/{{ p.discord_id }}?ei={{ p.ei_name | urlencode }}">{{ p.ei_name }}</a></td>
+          <td class="hide-mobile" title="{{ p.discord_name }}">{{ p.discord_name }}</td>
+          <td class="hide-mobile" title="{{ p.guild }}">{% if p.guild %}<a
+              href="/guild/{{ p.guild | guild_key | urlencode }}">{{ p.guild }}</a>{% else %}—{%
             endif %}</td>
-          <td>{{ p.se_gain | mag }}</td>
-          <td>{{ p.se_gain_pct | pct }}</td>
-          <td class="hide-mobile">{{ p.eb_gain | mag }}</td>
-          <td class="hide-mobile">{{ p.eb_gain_pct | pct }}</td>
-          <td class="hide-mobile">{{ p.fair_factor | float_ }}</td>
-          <td class="strong">{{ p.score | int_ }}</td>
+          <td class="hide-mobile">{{ p.se_start | mag }}</td>
+          <td class="hide-mobile">{{ p.eb_start | mag }}</td>
+          <td class="{{ p.se_gain | gain_class }}">{{ p.se_gain | mag }}</td>
+          <td class="{{ p.se_gain_pct | gain_class }}">{{ p.se_gain_pct | pct }}</td>
+          <td class="hide-mobile {{ p.eb_gain | gain_class }}">{{ p.eb_gain | mag }}</td>
+          <td class="hide-mobile {{ p.eb_gain_pct | gain_class }}">{{ p.eb_gain_pct | pct }}</td>
+          <td class="hide-mobile {{ p.prestiges_gain | gain_class }}">{{ p.prestiges_gain | int_ }}</td>
+          <td class="hide-mobile" title="{{ p.fair_factor | float_ }}">{{ p.fair_factor | float_ }}</td>
+          <td class="strong {{ p.score | gain_class }}">{{ p.score | int_ }}</td>
         </tr>
         {% endfor %}
       </tbody>

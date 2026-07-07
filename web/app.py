@@ -17,6 +17,7 @@ templates.env.filters["mag"] = filters.fmt_mag
 templates.env.filters["int_"] = filters.fmt_int
 templates.env.filters["pct"] = filters.fmt_pct
 templates.env.filters["float_"] = filters.fmt_float
+templates.env.filters["gain_class"] = filters.gain_class
 templates.env.filters["guild_key"] = guild_key
 templates.env.globals["SITE_TITLE"] = SITE_TITLE
 templates.env.globals["START_EPOCH"] = int(COMP_START_UTC.timestamp())

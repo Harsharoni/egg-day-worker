@@ -24,6 +24,8 @@
           <th>#</th>
           <th>Player</th>
           <th class="hide-mobile">Discord</th>
+          <th class="hide-mobile" data-tooltip="Soul Eggs held at competition start.">Start SE</th>
+          <th class="hide-mobile" data-tooltip="Earnings Bonus held at competition start.">Start EB</th>
           <th data-tooltip="Soul Eggs gained since competition start.">SE Gain</th>
           <th data-tooltip="Soul Eggs percentage gained since competition start.">SE %</th>
           <th class="hide-mobile" data-tooltip="Earnings Bonus gained since competition start.">EB Gain</th>
@@ -37,11 +39,13 @@
           <td>{{ m.rank }}</td>
           <td><a href="/player/{{ m.discord_id }}?ei={{ m.ei_name | urlencode }}">{{ m.ei_name }}</a></td>
           <td class="hide-mobile">{{ m.discord_name }}</td>
-          <td>{{ m.se_gain | mag }}</td>
-          <td>{{ m.se_gain_pct | pct }}</td>
-          <td class="hide-mobile">{{ m.eb_gain | mag }}</td>
-          <td class="hide-mobile">{{ m.eb_gain_pct | pct }}</td>
-          <td class="strong">{{ m.score | int_ }}</td>
+          <td class="hide-mobile">{{ m.se_start | mag }}</td>
+          <td class="hide-mobile">{{ m.eb_start | mag }}</td>
+          <td class="{{ m.se_gain | gain_class }}">{{ m.se_gain | mag }}</td>
+          <td class="{{ m.se_gain_pct | gain_class }}">{{ m.se_gain_pct | pct }}</td>
+          <td class="hide-mobile {{ m.eb_gain | gain_class }}">{{ m.eb_gain | mag }}</td>
+          <td class="hide-mobile {{ m.eb_gain_pct | gain_class }}">{{ m.eb_gain_pct | pct }}</td>
+          <td class="strong {{ m.score | gain_class }}">{{ m.score | int_ }}</td>
         </tr>
         {% endfor %}
       </tbody>

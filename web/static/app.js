@@ -84,6 +84,8 @@
     var INK2 = css.getPropertyValue("--ink-2").trim();
 
     var MAG = [
+      [1e63, "V"], [1e60, "Nd"], [1e57, "Od"], [1e54, "Sd"], [1e51, "sd"],
+      [1e48, "Qd"], [1e45, "qd"], [1e42, "Td"], [1e39, "D"], [1e36, "U"],
       [1e33, "d"], [1e30, "N"], [1e27, "o"], [1e24, "S"], [1e21, "s"],
       [1e18, "Q"], [1e15, "q"], [1e12, "T"], [1e9, "B"], [1e6, "M"], [1e3, "K"],
     ];
@@ -189,6 +191,53 @@
         empty.hidden = shown !== 0;
         if (emptyTerm) emptyTerm.textContent = search.value.trim();
       }
+    });
+  }
+
+  /* ---- leaderboard sort --------------------------------------------- */
+  var sortTable = document.getElementById("leaderboard-table");
+  if (sortTable) {
+    var tbody = sortTable.querySelector("tbody");
+    var headers = sortTable.querySelectorAll("th.sortable");
+    var activeTh = sortTable.querySelector("th.sort-desc, th.sort-asc");
+    var activeDir = activeTh && activeTh.classList.contains("sort-asc") ? "asc" : "desc";
+
+    var attrName = function (key) {
+      return "data-" + key.replace(/[A-Z]/g, function (c) { return "-" + c.toLowerCase(); });
+    };
+
+    var sortBy = function (th) {
+      var key = th.dataset.sortKey;
+      var isText = th.dataset.sortType === "text";
+      var dir = th === activeTh && activeDir === "desc" ? "asc" : "desc";
+
+      headers.forEach(function (h) { h.classList.remove("sort-asc", "sort-desc"); });
+      th.classList.add(dir === "asc" ? "sort-asc" : "sort-desc");
+      activeTh = th;
+      activeDir = dir;
+
+      var attr = attrName(key);
+      var rows = Array.prototype.slice.call(tbody.querySelectorAll("tr"));
+      rows.sort(function (a, b) {
+        var av = a.getAttribute(attr);
+        var bv = b.getAttribute(attr);
+        var missA = av === null || av === "";
+        var missB = bv === null || bv === "";
+        if (missA && missB) return 0;
+        if (missA) return 1; /* missing values always sink to the bottom */
+        if (missB) return -1;
+        if (isText) {
+          return dir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
+        }
+        var na = parseFloat(av);
+        var nb = parseFloat(bv);
+        return dir === "asc" ? na - nb : nb - na;
+      });
+      rows.forEach(function (row) { tbody.appendChild(row); });
+    };
+
+    headers.forEach(function (th) {
+      th.addEventListener("click", function () { sortBy(th); });
     });
   }
 
