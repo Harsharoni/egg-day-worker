@@ -32,7 +32,9 @@ def fetch_registrations() -> pd.DataFrame:
     creds = Credentials.from_service_account_file(GOOGLE_SERVICE_ACCOUNT_FILE, scopes=_SCOPES)
     gc = gspread.authorize(creds)
     ws = gc.open_by_key(REGISTRATION_SPREADSHEET_ID).worksheet(REGISTRATION_WORKSHEET)
-    records = ws.get_all_records()
+    header_row = ws.row_values(1)
+    expected_headers = [h if h else f"_blank_{i}" for i, h in enumerate(header_row)]
+    records = ws.get_all_records(expected_headers=expected_headers)
     if not records:
         return pd.DataFrame()
 
