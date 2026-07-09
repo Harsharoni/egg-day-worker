@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 {% block title %}{{ row.ei_name if row else "Player" }} — {{ SITE_TITLE }}{% endblock %}
 {% block content %}
@@ -112,6 +113,10 @@
   <div class="chart-box">
     <h3>Earnings bonus</h3>
     <canvas data-series="se-data" data-field="earnings_bonus" data-kind="mag" data-label="Earnings bonus"></canvas>
+  </div>
+  <div class="chart-box">
+    <h3>MER</h3>
+    <canvas data-series="se-data" data-field="mer" data-kind="plain" data-label="MER"></canvas>
   </div>
   <div class="chart-box">
     <h3>Leaderboard rank</h3>

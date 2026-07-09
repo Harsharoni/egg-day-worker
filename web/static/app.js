@@ -131,6 +131,8 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          hover: { mode: "index", intersect: false },
           plugins: {
             /* single series: the box title names it, no legend */
             legend: {
@@ -157,6 +159,7 @@
             },
             y: {
               reverse: kind === "rank", /* rank 1 belongs on top */
+              min: kind === "rank" ? 1 : undefined, /* no rank below 1 — grace pads past it otherwise */
               grace: "5%",
               grid: { color: GRID },
               ticks: {

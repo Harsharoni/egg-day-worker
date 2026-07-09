@@ -111,19 +111,31 @@ def get_player(discord_id: int, ei_name: str | None = None):
 
 def get_player_series(discord_id: int, ei_name: str) -> dict:
     def compute():
+        empty = {"labels": [], "soul_eggs": [], "earnings_bonus": [], "mer": [], "rank": []}
         hist = get_history()
         if hist.empty:
-            return {"labels": [], "soul_eggs": [], "earnings_bonus": [], "rank": []}
+            return empty
         rows = hist[(hist["discord_id"] == discord_id)
                     & (hist["ei_name"].str.lower() == ei_name.lower())]
         if rows.empty:
-            return {"labels": [], "soul_eggs": [], "earnings_bonus": [], "rank": []}
+            return empty
         rows = rows.sort_values("timestamp")
+
+        # competition-leaderboard rank (by score), not the raw SE-based rank
+        # egg9000 stamps on each poll — matches the "Rank N" shown on the page.
+        sh = get_score_history()
+        mine = sh[(sh["discord_id"] == discord_id)
+                  & (sh["ei_name"].str.lower() == ei_name.lower())]
+        rank_by_ts = mine.set_index("timestamp")["rank"]
+        ranks = [int(r) if pd.notna(r) else None
+                 for r in rows["timestamp"].map(rank_by_ts)]
+
         return {
             "labels": rows["timestamp"].dt.strftime(_LABEL_FMT).tolist(),
             "soul_eggs": rows["soul_eggs"].tolist(),
             "earnings_bonus": rows["earnings_bonus"].tolist(),
-            "rank": rows["rank"].tolist(),
+            "mer": rows["mer"].tolist(),
+            "rank": ranks,
         }
     return cache.get_or_compute(f"pseries:{discord_id}:{ei_name.lower()}", compute)
 
@@ -140,7 +152,7 @@ def get_guild(gkey: str):
 
 
 _SH_COLS = ["timestamp", "discord_id", "ei_name", "guild",
-            "se_gain", "eb_gain", "prestiges", "score"]
+            "se_gain", "eb_gain", "prestiges", "score", "rank"]
 
 
 def get_score_history() -> pd.DataFrame:
@@ -167,6 +179,8 @@ def get_score_history() -> pd.DataFrame:
         df["eb_gain"] = df["earnings_bonus"] - df["eb_start"]
         df["prestiges"] = df["num_prestiges"] - df["prestiges_start"]
         df["score"] = (df["se_gain"] * fair / 1e18).round()
+        df["rank"] = df.groupby("timestamp")["score"].rank(
+            method="min", ascending=False).astype(int)
 
         guilds = get_bundle()["scores"][["discord_id", "ei_name", "guild"]].copy()
         guilds["ei_l"] = guilds["ei_name"].str.lower()
