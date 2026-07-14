@@ -18,13 +18,14 @@ def compute_guild_standings(scores: pd.DataFrame,
     Guild names are free text from the registration form — rows group on
     guild_key, display name is the most common original spelling.
 
-    Returns columns: rank, guild_key, guild, member_count, se_start,
-    eb_start, se_gain, eb_gain, sum_score, guild_score — sorted by
+    Returns columns: rank, guild_key, guild, member_count, active_members,
+    se_start, eb_start, se_gain, eb_gain, sum_score, guild_score — sorted by
     guild_score descending. Empty DataFrame with those columns if no guild
     rows exist.
     """
-    cols = ["rank", "guild_key", "guild", "member_count", "se_start",
-            "eb_start", "se_gain", "eb_gain", "sum_score", "guild_score"]
+    cols = ["rank", "guild_key", "guild", "member_count", "active_members",
+            "se_start", "eb_start", "se_gain", "eb_gain", "sum_score",
+            "guild_score"]
     if scores.empty or "guild" not in scores.columns:
         return pd.DataFrame(columns=cols)
 
@@ -47,6 +48,7 @@ def compute_guild_standings(scores: pd.DataFrame,
         return pd.Series({
             "guild": display,
             "member_count": len(g),
+            "active_members": active,
             "se_start": g["se_start"].sum(),
             "eb_start": g["eb_start"].sum(),
             "se_gain": g["se_gain"].sum(),

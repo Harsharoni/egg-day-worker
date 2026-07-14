@@ -91,6 +91,7 @@
         <col class="col-num hide-mobile">
         <col class="col-num hide-mobile">
         <col class="col-num">
+        <col class="col-num">
       </colgroup>
       <thead>
         <tr>
@@ -103,6 +104,7 @@
           <th class="hide-mobile" data-tooltip="Earnings Bonus gained since competition start.">EB Gain</th>
           <th class="hide-mobile" data-tooltip="Earnings Bonus percentage gained since competition start.">EB %</th>
           <th data-tooltip="Individual competition score = SE gained × fair factor ÷ 1 quintillion.">Score</th>
+          <th data-tooltip="This player's share of the guild score above: score ÷ active members^fairness. Shares sum to the guild score.">Adj. Score</th>
         </tr>
       </thead>
       <tbody>
@@ -116,7 +118,8 @@
           <td class="{{ m.se_gain_pct | gain_class }}">{{ m.se_gain_pct | pct }}</td>
           <td class="hide-mobile {{ m.eb_gain | gain_class }}">{{ m.eb_gain | mag }}</td>
           <td class="hide-mobile {{ m.eb_gain_pct | gain_class }}">{{ m.eb_gain_pct | pct }}</td>
-          <td class="strong {{ m.score | gain_class }}">{{ m.score | int_ }}</td>
+          <td class="{{ m.score | gain_class }}">{{ m.score | int_ }}</td>
+          <td class="strong {{ m.contribution | gain_class }}">{{ m.contribution | int_ }}</td>
         </tr>
         {% endfor %}
       </tbody>

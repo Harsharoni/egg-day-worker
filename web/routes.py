@@ -1,7 +1,18 @@
+import pandas as pd
 from fastapi import APIRouter, HTTPException, Request
 
+from config import GUILD_FAIR_POWER
 from processors.guilds import guild_key
 from web import service
+
+
+def _with_contribution(members: pd.DataFrame, active_members: int) -> pd.DataFrame:
+    """This player's share of guild_score: score / active_members^fairness,
+    same divisor as the guild total, so shares sum to guild_score."""
+    members = members.copy()
+    score = pd.to_numeric(members["score"], errors="coerce")
+    members["contribution"] = (score / active_members ** GUILD_FAIR_POWER).round()
+    return members
 
 router = APIRouter()
 
@@ -26,6 +37,7 @@ def home(request: Request):
         members = scores[scores["guild"].map(guild_key) == g["guild_key"]]
         members = members.sort_values("score", ascending=False,
                                       na_position="last")
+        members = _with_contribution(members, g["active_members"])
         guild_sections.append({"info": g, "members": members.to_dict("records")})
     return _render(request, "home.html", {
         "phase": bundle["phase"],
@@ -79,6 +91,7 @@ def guild(request: Request, gkey: str):
     info, members = service.get_guild(gkey)
     if info is None:
         raise HTTPException(404, "guild not found")
+    members = _with_contribution(members, info["active_members"])
     return _render(request, "guild.html", {
         "info": info,
         "members": members.to_dict("records"),
