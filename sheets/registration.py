@@ -65,5 +65,5 @@ def fetch_registrations() -> pd.DataFrame:
         df = df[~bad]
     df["discord_id"] = df["discord_id"].astype("int64")
 
-    df.drop_duplicates(subset="discord_id", keep="last", inplace=True)
+    df.drop_duplicates(subset=["discord_id", "ei_name"], keep="last", inplace=True)
     return df.reset_index(drop=True)

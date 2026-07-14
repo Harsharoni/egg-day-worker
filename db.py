@@ -54,11 +54,12 @@ CREATE TABLE IF NOT EXISTS start_snapshot (
 );
 
 CREATE TABLE IF NOT EXISTS participants (
-    discord_id      BIGINT      PRIMARY KEY,
+    discord_id      BIGINT      NOT NULL,
     discord_name    TEXT        NOT NULL,
     ei_name         TEXT        NOT NULL,
     guild           TEXT        NOT NULL,
-    registered_at   TIMESTAMPTZ NOT NULL
+    registered_at   TIMESTAMPTZ NOT NULL,
+    PRIMARY KEY (discord_id, ei_name)
 );
 """
 
@@ -157,7 +158,8 @@ def snapshot_at(ts: datetime) -> pd.DataFrame:
 
 
 def upsert_participants(df: pd.DataFrame) -> None:
-    """Insert/update registrations keyed on discord_id."""
+    """Insert/update registrations keyed on (discord_id, ei_name) — one row
+    per registered account, so a discord_id can register several alts."""
     if df.empty:
         return
     now = datetime.now(timezone.utc)
@@ -168,9 +170,8 @@ def upsert_participants(df: pd.DataFrame) -> None:
                     "INSERT INTO participants "
                     "(discord_id, discord_name, ei_name, guild, registered_at) "
                     "VALUES (:id, :dname, :ei, :guild, :ts) "
-                    "ON CONFLICT (discord_id) DO UPDATE SET "
+                    "ON CONFLICT (discord_id, ei_name) DO UPDATE SET "
                     "discord_name = EXCLUDED.discord_name, "
-                    "ei_name = EXCLUDED.ei_name, "
                     "guild = EXCLUDED.guild"
                 ),
                 {"id": row.discord_id, "dname": row.discord_name,

@@ -16,7 +16,8 @@
   </nav>
   <div class="comp-status">
     <div id="countdown" data-start-epoch="{{ START_EPOCH }}" data-end-epoch="{{ END_EPOCH }}"></div>
-    {% if last_updated %}<span id="last-updated">Last refreshed {{ last_updated.strftime("%d %b %Y, %H:%M") }} UTC</span>{% endif %}
+    {% if last_updated %}<span id="last-updated" data-epoch="{{ last_updated.timestamp() | int }}" data-tooltip="When the worker last polled EGG9000 for stats, the freshness of the numbers below."></span>{% endif %}
+    <span id="page-loaded" data-tooltip="When you last loaded this page. If 'Stats as of' is newer than this, hit refresh to see it."></span>
     <button type="button" id="refresh-btn" title="Refresh stats">&#8635;</button>
   </div>
 </header>

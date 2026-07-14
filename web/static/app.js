@@ -244,6 +244,26 @@
     });
   }
 
+  /* ---- last-updated / page-loaded timestamps, in the viewer's local
+     time zone (browser default locale) --------------------------------- */
+  var fmtLocal = function (d) {
+    return d.toLocaleDateString(undefined,
+      { day: "2-digit", month: "short", year: "numeric" })
+      + ", " + d.toLocaleTimeString(undefined,
+        { hour: "2-digit", minute: "2-digit" });
+  };
+
+  var lastUpdated = document.getElementById("last-updated");
+  if (lastUpdated && lastUpdated.dataset.epoch) {
+    lastUpdated.textContent = "Stats as of "
+      + fmtLocal(new Date(Number(lastUpdated.dataset.epoch) * 1000));
+  }
+
+  var pageLoaded = document.getElementById("page-loaded");
+  if (pageLoaded) {
+    pageLoaded.textContent = "You loaded this at " + fmtLocal(new Date());
+  }
+
   /* ---- gentle auto-refresh while the comp is live ------------------ */
   if (document.body.dataset.phase === "live") {
     setTimeout(function () { location.reload(); }, 120000);

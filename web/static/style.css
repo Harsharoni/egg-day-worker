@@ -92,12 +92,13 @@ a:hover {
 
 .comp-status {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: 0.75rem;
   font-size: 0.85rem;
 }
 
-#last-updated {
+#last-updated, #page-loaded {
   color: var(--muted);
 }
 
