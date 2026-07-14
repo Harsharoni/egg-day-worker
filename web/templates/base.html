@@ -14,14 +14,15 @@
     <a href="/" {% if request.url.path == "/" %}class="active"{% endif %}>Guilds</a>
     <a href="/leaderboard" {% if request.url.path == "/leaderboard" %}class="active"{% endif %}>Leaderboard</a>
   </nav>
-  <div id="countdown" data-start-epoch="{{ START_EPOCH }}" data-end-epoch="{{ END_EPOCH }}"></div>
+  <div class="comp-status">
+    <div id="countdown" data-start-epoch="{{ START_EPOCH }}" data-end-epoch="{{ END_EPOCH }}"></div>
+    {% if last_updated %}<span id="last-updated">Last refreshed {{ last_updated.strftime("%d %b %Y, %H:%M") }} UTC</span>{% endif %}
+    <button type="button" id="refresh-btn" title="Refresh stats">&#8635;</button>
+  </div>
 </header>
 <main>
 {% block content %}{% endblock %}
 </main>
-<footer class="site-footer">
-  {% if last_updated %}<span>Last updated {{ last_updated.strftime("%d %b %Y, %H:%M") }} UTC</span>{% endif %}
-</footer>
 {% block scripts %}{% endblock %}
 <script src="/static/app.js"></script>
 </body>

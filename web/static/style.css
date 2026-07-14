@@ -90,6 +90,34 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
+.comp-status {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+
+#last-updated {
+  color: var(--muted);
+}
+
+#refresh-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink-2);
+  border-radius: 0.35rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  line-height: 1;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+#refresh-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 main {
   max-width: 94rem;
   margin: 0 auto;
@@ -395,14 +423,6 @@ th.sort-desc::after {
 .chart-box canvas {
   max-height: 320px;
   width: 100%;
-}
-
-.site-footer {
-  max-width: 94rem;
-  margin: 0 auto;
-  padding: 1rem 1.25rem 2rem;
-  color: var(--muted);
-  font-size: 0.85rem;
 }
 
 /* ---- tooltips ---------------------------------------------------- */

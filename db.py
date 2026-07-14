@@ -74,7 +74,7 @@ def initialize() -> None:
         conn.execute(text(_DDL))
 
 
-def _dedupe(df: pd.DataFrame) -> pd.DataFrame:
+def dedupe(df: pd.DataFrame) -> pd.DataFrame:
     """Players can own several EI accounts; identity key is (discord_id, ei_name).
     Drop exact key collisions (two accounts, both with blank ei_name)."""
     df = df.copy()
@@ -89,7 +89,7 @@ def _dedupe(df: pd.DataFrame) -> pd.DataFrame:
 
 def save_snapshot(df: pd.DataFrame) -> None:
     timestamp = datetime.now(timezone.utc).replace(second=0, microsecond=0)
-    df = _dedupe(df)
+    df = dedupe(df)
     df["timestamp"] = timestamp
 
     with _engine.begin() as conn:
@@ -131,7 +131,7 @@ def save_start_snapshot(df: pd.DataFrame) -> None:
         existing = conn.execute(text("SELECT COUNT(*) FROM start_snapshot")).scalar()
         if existing:
             return
-        df = _dedupe(df)
+        df = dedupe(df)
         df["timestamp"] = datetime.now(timezone.utc).replace(second=0, microsecond=0)
         df[_COLS].to_sql("start_snapshot", conn, if_exists="append", index=False)
     print(f"[db] start snapshot frozen — {len(df)} players")

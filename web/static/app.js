@@ -248,4 +248,10 @@
   if (document.body.dataset.phase === "live") {
     setTimeout(function () { location.reload(); }, 120000);
   }
+
+  /* ---- manual refresh button ---------------------------------------- */
+  var refreshBtn = document.getElementById("refresh-btn");
+  if (refreshBtn) {
+    refreshBtn.addEventListener("click", function () { location.reload(); });
+  }
 })();

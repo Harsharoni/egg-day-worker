@@ -8,7 +8,7 @@ from processors.competition import enrich, comp_phase, resolve_end_snapshot
 from processors.participants import apply_participants
 from processors.scoring import compute_scores
 from db import (
-    initialize, save_snapshot, save_start_snapshot, load_start_snapshot,
+    initialize, dedupe, save_snapshot, save_start_snapshot, load_start_snapshot,
     upsert_participants, load_participants,
 )
 from sheets.writer import write_scoreboard
@@ -61,6 +61,7 @@ def run_cycle() -> None:
 
     df = fetch_leaderboard()
     df = enrich(df)
+    df = dedupe(df)
     save_snapshot(df)
     sync_registrations()
     update_scoreboard(df, now)
