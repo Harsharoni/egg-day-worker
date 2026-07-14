@@ -12,8 +12,9 @@ def compute_guild_standings(scores: pd.DataFrame,
     """
     Guild race standings from participant-matched score rows.
 
-    guild_score = round(sum(member scores) / N^power); N counts members with
-    a score, so registering inactive players doesn't drag a guild down.
+    guild_score = round(sum(member scores) / N^power); N counts members whose
+    score exceeds 5% of the guild's average score, so registering inactive
+    players doesn't drag a guild down.
     Guild names are free text from the registration form — rows group on
     guild_key, display name is the most common original spelling.
 
@@ -40,7 +41,8 @@ def compute_guild_standings(scores: pd.DataFrame,
 
     def _one(g: pd.DataFrame) -> pd.Series:
         display = g["guild"].str.strip().value_counts().index[0]
-        active = int((g["score"] > 0).sum()) or len(g)
+        avg = g["score"].mean()
+        active = int((g["score"] > 0.05 * avg).sum()) or len(g)
         total = g["score"].sum()
         return pd.Series({
             "guild": display,
