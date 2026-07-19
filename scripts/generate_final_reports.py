@@ -10,11 +10,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from reports.final import generate_all
+from reports.final import generate_all as generate_final_reports
+from reports.community import generate_all as generate_community_reports
 
 
 def main() -> None:
-    paths = generate_all()
+    paths = generate_final_reports() + generate_community_reports()
     if not paths:
         print("[report] nothing generated")
         return
